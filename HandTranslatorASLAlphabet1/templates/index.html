@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ASL Detection</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 30px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+      justify-content: center;
+    }
+    .box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      flex: 1 1 400px;
+    }
+    video {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .label-box {
+      margin-top: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #0984e3;
+    }
+    .result {
+      background: #dff9fb;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+    .img-preview {
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+    }
+    button {
+      background: #00b894;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background: #019875;
+    }
+  </style>
+</head>
+<body>
+
+<h1 style="text-align:center;">🖐️ Nhận diện ASL bằng AI</h1>
+
+<div class="container">
+
+  <!-- Upload ảnh -->
+  <div class="box">
+    <h2>📤 Nhận diện từ ảnh</h2>
+    <form method="POST" action="/predict" enctype="multipart/form-data">
+      <input type="file" name="image" accept="image/*" required>
+      <br><br>
+      <button type="submit">Tải lên và nhận diện</button>
+    </form>
+    {% if image_name %}
+      <div class="result">Kết quả: {{ result }}</div>
+      <img src="{{ url_for('static', filename='uploads/' + image_name) }}" class="img-preview">
+    {% endif %}
+  </div>
+
+  <!-- Realtime cam -->
+  <div class="box">
+    <h2>📹 Camera realtime</h2>
+    <video id="video" autoplay muted playsinline></video>
+    <div class="label-box">Ký tự: <span id="realtime-label">...</span></div>
+    <button onclick="toggleCamera()" id="toggleBtn">📡 Bật camera</button>
+  </div>
+
+</div>
+
+<!-- Hidden canvas -->
+<canvas id="canvas" width="224" height="224" style="display: none;"></canvas>
+
+<script>
+  const video = document.getElementById('video');
+  const labelBox = document.getElementById('realtime-label');
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const toggleBtn = document.getElementById('toggleBtn');
+
+  let stream = null;
+  let isStreaming = false;
+  let predictInterval = null;
+
+  async function startCamera() {
+    stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    video.srcObject = stream;
+    isStreaming = true;
+    toggleBtn.innerText = "⛔ Tắt camera";
+    predictInterval = setInterval(predictFrame, 1000);
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+    }
+    video.srcObject = null;
+    isStreaming = false;
+    toggleBtn.innerText = "📡 Bật camera";
+    clearInterval(predictInterval);
+    labelBox.textContent = "...";
+  }
+
+  function toggleCamera() {
+    if (!isStreaming) {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+  }
+
+  async function predictFrame() {
+    if (!isStreaming) return;
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg');
+
+    const res = await fetch('/predict_frame', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: dataUrl })
+    });
+
+    const data = await res.json();
+    labelBox.textContent = data.label;
+  }
+</script>
+
+</body>
+</html>
