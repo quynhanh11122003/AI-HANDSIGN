@@ -1,9 +1,8 @@
-# HandTranslatorASLalphabet 🤚🌐
-Ứng dụng AI trong nhận diện ký hiệu ngôn ngữ ASL và chuyển đổi thành văn bản hỗ trợ giao tiếp cho người khiếm thính
+# AI-HANDSIGN 🤚🌐
 
 ## Description 📋
 
-HandTranslatorASLalphabet is a project that utilizes Mediapipe technology and deep learning models to translate the American Sign Language (ASL) alphabet in real-time. It enables deaf and mute individuals to communicate more easily with those who do not know sign language.
+AI-HANDSIGN is a project that utilizes Mediapipe technology and deep learning models to translate the American Sign Language (ASL) alphabet in real-time. It enables deaf and mute individuals to communicate more easily with those who do not know sign language.
 
 ## How It Works? 🚀
 
@@ -42,4 +41,6 @@ HandTranslatorASLalphabet is a project that utilizes Mediapipe technology and de
    - Press the **'F' key** to flip the camera horizontally.
    - Press the **'ESC' key** to exit the program.
 
-## Example 👓
+## Demo 👓
+   🎬 [Watch the demo video here](https://drive.google.com/file/d/1u0zD73JhqAwAIc18s_nFqQMmDlpxvrH1/view?usp=sharing)  
+   📄 [View the Word document here](https://docs.google.com/document/d/122KXRp3gsH-HzVKIgH_GAhoSJa6kRkkL/edit?usp=sharing&ouid=110283832961834477971&rtpof=true&sd=true) 
